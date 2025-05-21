@@ -60,7 +60,7 @@ httpx==0.28.1
 huggingface-hub==0.30.2
 idna==3.10
 ipykernel==6.29.5
-ipython==9.2.0
+ipython==8.12.0
 ipython_pygments_lexers==1.1.1
 ipywidgets==8.1.6
 isoduration==20.11.0
