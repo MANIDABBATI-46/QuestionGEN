@@ -679,4 +679,4 @@ if __name__ == '__main__':
         hashed_admin_password = generate_password_hash(admin_password)
         users_collection.insert_one({'username': admin_username, 'password': hashed_admin_password, 'role': 'admin'})
 
-    app.run(debug=True) # Set debug=False for production!
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))# Set debug=False for production!
