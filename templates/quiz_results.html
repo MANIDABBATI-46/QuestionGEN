@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Results - MCQ Genius</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #e6ffe6, #b3ffb3); /* Light green gradient */
+            padding-top: 50px;
+            padding-bottom: 50px;
+            color: #333;
+        }
+        .container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.8s ease-out;
+        }
+        h2 {
+            color: #28a745;
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight: 600;
+        }
+        .score-section {
+            background-color: #f0f8f0;
+            border: 1px solid #d4edda;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 1.2em;
+            color: #28a745;
+            font-weight: 600;
+        }
+        .score-section .score-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #1a7f37;
+        }
+        .quiz-details {
+            margin-top: 40px;
+            border-top: 1px solid #eee;
+            padding-top: 30px;
+        }
+        .quiz-details h4 {
+            color: #007bff;
+            margin-bottom: 25px;
+            text-align: center;
+            font-weight: 600;
+        }
+        .question-detail-item {
+            background-color: #fdfdfd;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+        .question-detail-item.correct {
+            border-left: 5px solid #28a745;
+        }
+        .question-detail-item.incorrect {
+            border-left: 5px solid #dc3545;
+        }
+        .question-detail-item p {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #343a40;
+        }
+        .options-list {
+            list-style-type: none;
+            padding-left: 0;
+            margin-bottom: 10px;
+        }
+        .options-list li {
+            padding: 5px 0;
+            color: #555;
+        }
+        .user-choice-highlight {
+            font-weight: bold;
+            background-color: #e2f0fb; /* Light blue highlight for user choice */
+            padding: 2px 5px;
+            border-radius: 4px;
+        }
+        .user-choice-correct {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .user-choice-incorrect {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        .correct-answer-display {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+            color: #17a2b8; /* Info color for correct answer */
+            font-size: 0.95em;
+        }
+        .link-group {
+            text-align: center;
+            margin-top: 40px;
+        }
+        .btn-success-custom, .btn-info-custom {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            color: #fff;
+            margin: 0 10px;
+            transition: background-color 0.3s ease;
+        }
+        .btn-success-custom {
+            background-color: #28a745;
+        }
+        .btn-success-custom:hover {
+            background-color: #218838;
+        }
+        .btn-info-custom {
+            background-color: #17a2b8;
+        }
+        .btn-info-custom:hover {
+            background-color: #138496;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Quiz Results</h2>
+
+        {% if correct_answers is not none and total_questions is not none %}
+            <div class="score-section">
+                <p>Your Quiz Result:</p>
+                <p><span class="score-value">{{ correct_answers }}</span> out of <span class="score-value">{{ total_questions }}</span> questions correct.</p>
+            </div>
+        {% else %}
+            <p class="text-center">No quiz result found for this session.</p>
+        {% endif %}
+
+        {% if quiz_details %}
+            <div class="quiz-details">
+                <h4>Detailed Answers:</h4>
+                {% for details in quiz_details %}
+                    <div class="question-detail-item {% if details.is_correct %}correct{% else %}incorrect{% endif %}">
+                        <p><strong>Q{{ loop.index }}.</strong> {{ details.question }}</p>
+                        <ol class="options-list">
+                            {% for option in details.options %}
+                                <li {% if option.label == details.user_choice %}class="user-choice-highlight" {% endif %}>
+                                    {{ option.label }}. {{ option.text }}
+                                    {% if option.label == details.user_choice %}
+                                        {% if details.is_correct %}
+                                            <span class="user-choice-correct">(Your Answer - Correct)</span>
+                                        {% else %}
+                                            <span class="user-choice-incorrect">(Your Answer - Incorrect)</span>
+                                        {% endif %}
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </ol>
+                        <span class="correct-answer-display">Correct Answer: {{ details.correct_answer_label }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-center">No detailed quiz answers available. Please complete a quiz to see results.</p>
+        {% endif %}
+
+        <div class="link-group">
+            <a href="{{ url_for('index') }}" class="btn btn-success-custom">Back to Generator</a>
+            <a href="{{ url_for('history') }}" class="btn btn-info-custom">View Full History</a>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

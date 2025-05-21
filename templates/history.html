@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Activity History - MCQ Genius</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #e6ffe6, #b3ffb3); /* Light green gradient */
+            padding-top: 50px;
+            padding-bottom: 50px;
+            color: #333;
+        }
+        .container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.8s ease-out;
+        }
+        h1 {
+            color: #28a745;
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 2.5rem;
+        }
+        .history-item {
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+            background-color: #fdfefe;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            position: relative; /* For delete button positioning */
+            transition: transform 0.2s ease;
+        }
+        .history-item:hover {
+            transform: translateY(-3px);
+        }
+        .history-item h5 {
+            color: #3f2b96;
+            margin-bottom: 15px;
+            font-weight: 600;
+            font-size: 1.3rem;
+        }
+        .history-item h6 {
+            color: #6c757d;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+        .mcq-list, .quiz-details-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        .mcq-list li, .quiz-details-list li {
+            margin-bottom: 15px;
+            border-left: 4px solid #b3e0ff; /* Light blue accent */
+            padding-left: 15px;
+            background-color: #f7fcff;
+            padding: 12px;
+            border-radius: 6px;
+        }
+        .mcq-list li strong {
+            font-weight: bold;
+            color: #0056b3;
+            font-size: 1.05rem;
+        }
+        .options-list {
+            list-style-type: upper-alpha;
+            margin-left: 20px;
+            margin-top: 10px;
+            font-size: 0.95rem;
+        }
+        .options-list li {
+            margin-bottom: 5px;
+            border-left: none; /* Override parent border */
+            padding: 0; /* Override parent padding */
+        }
+        .correct-answer-text {
+            color: #28a745;
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-top: 8px;
+            display: block;
+        }
+        .no-history {
+            text-align: center;
+            color: #6c757d;
+            padding: 50px;
+            font-size: 1.1rem;
+        }
+        .back-link {
+            display: block;
+            margin-top: 40px;
+            text-align: center;
+            color: #007bff;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 500;
+            padding: 10px 25px;
+            border-radius: 30px;
+            background-color: #e9ecef;
+            transition: all 0.3s ease;
+            max-width: 250px;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        .back-link:hover {
+            background-color: #cfd8dc;
+            color: #0056b3;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+        }
+        .quiz-score-summary {
+            font-size: 1.15rem;
+            font-weight: bold;
+            color: #17a2b8;
+            margin-top: 10px;
+            margin-bottom: 15px;
+        }
+        .quiz-question-review .user-choice {
+            color: #007bff;
+            font-weight: bold;
+        }
+        .quiz-question-review .correct-choice {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .quiz-question-review .incorrect-choice {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        .delete-form {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+        }
+        .delete-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 15px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: background-color 0.2s ease-in-out, transform 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .delete-btn:hover {
+            background-color: #c82333;
+            transform: translateY(-2px);
+        }
+        .flash-message {
+            margin-bottom: 20px;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 500;
+            animation: fadeIn 0.5s ease-out;
+        }
+        .alert-success { background-color: #d4edda; color: #155724; border-color: #c3e6cb; }
+        .alert-error, .alert-danger { background-color: #f8d7da; color: #721c24; border-color: #f5c6cb; }
+        .alert-warning { background-color: #fff3cd; color: #856404; border-color: #ffeeba; }
+        .alert-info { background-color: #d1ecf1; color: #0c5460; border-color: #bee5eb; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Your Activity History</h1>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} flash-message">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% if history|length > 0 %}
+            {% for item in history %}
+                <div class="history-item">
+                    {# Delete button for each item #}
+                    <form action="{{ url_for('delete_history_item', item_id=item._id) }}" method="POST" class="delete-form" onsubmit="return confirm('Are you sure you want to delete this history item?');">
+                        <button type="submit" class="delete-btn">Delete</button>
+                    </form>
+
+                    {% if item.type == 'quiz_result' %}
+                        <h5>Quiz Attempt</h5>
+                        <h6>Attempted On: {{ item.generated_at.strftime('%Y-%m-%d %H:%M:%S') }}</h6>
+                        <p class="quiz-score-summary">Score: {{ item.quiz_score }} / {{ item.total_questions }}</p>
+                        {% if item.quiz_details %}
+                            <p><strong>Quiz Questions and User Answers:</strong></p>
+                            <ul class="quiz-details-list">
+                                {% for q_key, details in item.quiz_details.items() %}
+                                    <li>
+                                        <strong>Q:</strong> {{ details.question }}
+                                        <ol class="options-list">
+                                            {% for option_detail in details.options %}
+                                                <li>
+                                                    {{ option_detail.label }}. {{ option_detail.text }}
+                                                    {% if option_detail.label == details.user_choice %}
+                                                        {% if option_detail.label == details.correct_answer %}
+                                                            <span class="user-choice-correct">(Your Answer - Correct)</span>
+                                                        {% else %}
+                                                            <span class="user-choice-incorrect">(Your Answer - Incorrect)</span>
+                                                        {% endif %}
+                                                    {% endif %}
+                                                    {% if option_detail.label == details.correct_answer and option_detail.label != details.user_choice %}
+                                                        <span class="correct-answer-text">(Correct Answer)</span>
+                                                    {% endif %}
+                                                </li>
+                                            {% endfor %}
+                                        </ol>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    {% else %} {# Default to mcq_generation if type is not quiz_result or not set #}
+                        <h5>MCQ Generation</h5>
+                       <h6>Generated At: {{ item.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</h6>
+                        {% if item.original_text_snippet %}
+                            <p><strong>Original Text Snippet:</strong> {{ item.original_text_snippet }}</p>
+                        {% endif %}
+                        <p><strong>Generated {{ item.mcqs|length }} Questions:</strong></p>
+                        <ul class="mcq-list">
+                            {% for mcq in item.mcqs %}
+                               <li>
+                                    <strong>Q{{ loop.index }}:</strong> {{ mcq.question }}
+				     <ol class="options-list">
+                                        {% for option in mcq.options %}
+                                            <li>{{ option.label }}. {{ option.text }}</li>
+                                        {% endfor %}
+                                    </ol>
+                                    <span class="correct-answer-text">Correct Answer: {{ mcq.answer }}</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="no-history">No activity history available yet. Generate some MCQs or take a quiz!</p>
+        {% endif %}
+        <a href="{{ url_for('index') }}" class="back-link">Back to Generator</a>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

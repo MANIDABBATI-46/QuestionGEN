@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Generated MCQs PDF</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12pt;
+            margin: 40px;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .question-item {
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed #ccc;
+        }
+        .question-text {
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 14pt;
+            color: #0056b3;
+        }
+        .options-list {
+            list-style-type: upper-alpha;
+            margin-left: 25px;
+            padding: 0;
+        }
+        .options-list li {
+            margin-bottom: 5px;
+            font-size: 12pt;
+        }
+        .correct-answer {
+            color: #28a745;
+            font-weight: bold;
+            margin-top: 10px;
+            display: block;
+        }
+        .page-break {
+            page-break-before: always;
+        }
+    </style>
+</head>
+<body>
+    <h1>MCQ Questions</h1>
+
+    {% for mcq in mcqs %}
+        <div class="question-item"> {# Corrected class attribute: removed duplicate "class=" #}
+            <p class="question-text">Q{{ loop.index }}. {{ mcq.question }}</p>
+            <ol class="options-list">
+                {% for option in mcq.options %}
+                    <li>{{ option.label }}. {{ option.text }}</li>
+                {% endfor %}
+            </ol>
+            {% if include_answers %} {# Conditional display of answers #}
+                <span class="correct-answer">Correct Answer: {{ mcq.answer }}</span>
+            {% endif %}
+        </div>
+        {% if loop.index % 5 == 0 and not loop.last %}
+            <div class="page-break"></div>
+        {% endif %}
+    {% endfor %}
+</body>
+</html>
